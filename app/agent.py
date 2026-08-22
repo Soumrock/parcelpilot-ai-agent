@@ -417,6 +417,11 @@ class Agent:
 
                 if isinstance(result, dict) and result.get("error") == "ACCESS_DENIED":
                     access_denied = True
+                    return {
+                        "answer": "I can’t share the requested information because this user is not authorized to access it. Please use an authorized account or role to retrieve the data.",
+                        "tool_trace": tool_trace,
+                        "pending_confirmation": None,
+                    }
 
                 messages.append({
                     "role": "tool",
