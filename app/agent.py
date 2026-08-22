@@ -27,6 +27,7 @@ CORE BEHAVIOR
 - If key facts conflict or are unknown, state the uncertainty and recommend verification/escalation rather than guessing.
 - Never execute a state-changing action directly. First prepare it with create_escalation, then ask the user for explicit confirmation.
 - Access control is enforced by the tools; never try to bypass it.
+- If a tool returns ACCESS_DENIED, do not suggest that an escalation, ticket, or approval can be used to retrieve or reveal the protected data. State that the requested data is not available to this user and stop.
 - When citing evidence, mention the source filename(s) in plain language.
 - Keep answers concise and operationally useful.
 - Never invent capabilities, external contacts, or guaranteed future timing.
@@ -362,6 +363,7 @@ class Agent:
             {"role": "user", "content": message},
         ]
         tool_trace: list[dict[str, Any]] = []
+        access_denied = False
 
         for _ in range(8):
             response = self.client.chat.completions.create(
@@ -374,6 +376,12 @@ class Agent:
             msg = response.choices[0].message
             raw_calls = getattr(msg, "tool_calls", None) or []
             if not raw_calls:
+                if access_denied:
+                    return {
+                        "answer": "I can’t share the requested information because this user is not authorized to access it. Please use an authorized account or role to retrieve the data.",
+                        "tool_trace": tool_trace,
+                        "pending_confirmation": None,
+                    }
                 return {
                     "answer": getattr(msg, "content", None) or "I could not produce a response.",
                     "tool_trace": tool_trace,
@@ -406,6 +414,9 @@ class Agent:
                     result = {"error": "UNKNOWN_TOOL", "message": f"Tool '{name}' is not available."}
                 else:
                     result = self.dispatch[name](**args)
+
+                if isinstance(result, dict) and result.get("error") == "ACCESS_DENIED":
+                    access_denied = True
 
                 messages.append({
                     "role": "tool",
