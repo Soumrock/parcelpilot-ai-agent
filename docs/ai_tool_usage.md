@@ -1,5 +1,3 @@
-# AI Tool Usage
+ChatGPT was used as an AI coding assistant during development to accelerate implementation, debug issues, refine code, review and generate test cases, and iterate on agent and tool behavior. I also used iterative prompt optimization to improve the agent’s tool selection, reasoning, reliability, and handling of ambiguous or conflicting inputs.
 
-ChatGPT was used as an AI coding assistant during development. It was used to accelerate implementation, debug errors, refine code, review and generate test cases, iterate on agent/tool behavior, and prepare submission documentation.
-
-The use of AI assistance did not replace engineering review. Architecture choices, assessment-requirement interpretation, source-priority rules, data and authorization behavior, validation against the supplied data pack, and final testing were reviewed and directed during development.
+I remained responsible for understanding the assessment requirements, making architecture and technical decisions, defining source-priority and authorization behavior, validating the implementation against the supplied data pack, testing edge cases, and reviewing the generated code and outputs before using them in the project.
